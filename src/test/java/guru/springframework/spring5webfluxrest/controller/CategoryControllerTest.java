@@ -84,4 +84,24 @@ public class CategoryControllerTest {
                 .expectStatus()
                 .isOk();
     }
+
+    @Test
+    public void patchCategory() {
+        BDDMockito.given(categoryRepository.findById(anyString()))
+                        .willReturn(Mono.just(Category.builder().build()));
+
+        BDDMockito.given(categoryRepository.save(any(Category.class)))
+                .willReturn(Mono.just(Category.builder().build()));
+
+        Mono<Category> categoryMono = Mono.just(Category.builder().description("asdf").build());
+
+        webTestClient.patch()
+                .uri("/api/v1/categories/anyid")
+                .body(categoryMono, Category.class)
+                .exchange()
+                .expectStatus()
+                .isOk();
+
+        BDDMockito.verify(categoryRepository).save(any());
+    }
 }
